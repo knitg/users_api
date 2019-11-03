@@ -30,7 +30,8 @@ class Customer(models.Model):
     fullName= models.CharField(default='',max_length=50, null=False)
     userName= models.CharField(default='',max_length=50, null=False)
     email= models.EmailField(max_length=50, null=True)
-    mobileNo= models.IntegerField(null=True)
+    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+    password = models.CharField(null=True, blank=True, max_length=50)
     address= models.ManyToManyField(Address)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
@@ -50,8 +51,9 @@ class Tailor(models.Model):
     shopName= models.CharField(max_length=50, null=True)
     userName= models.CharField(default='',max_length=50, null=False)
     email= models.EmailField(max_length=50, null=True)
-    mobileNo= models.IntegerField(null=True)
-    address= models.ManyToManyField(Address)
+    password = models.CharField(null=True, blank=True, max_length=50)
+    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+    address= models.ForeignKey(Address, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -70,8 +72,9 @@ class Boutique(models.Model):
     shopName= models.CharField(max_length=50, null=True)
     userName= models.CharField(default='',max_length=50, null=False)
     email= models.EmailField(max_length=50, null=True)
-    mobileNo= models.IntegerField(null=True)
-    address= models.ManyToManyField(Address)
+    password = models.CharField(null=True, blank=True, max_length=50)
+    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+    address= models.ForeignKey(Address, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -85,23 +88,64 @@ class Boutique(models.Model):
         return self.shopName
 
 
-class Designer(models.Model):
+class MaggamDesigner(models.Model):
     fullName= models.CharField(default='', max_length=50, null=False)
     shopName= models.CharField(max_length=50, null=True)
     userName= models.CharField(default='',max_length=50, null=False)
     email= models.EmailField(max_length=50, null=True)
-    mobileNo= models.IntegerField(null=True)
-    address= models.ManyToManyField(Address)
+    password = models.CharField(null=True, blank=True, max_length=50)
+    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+    address= models.ForeignKey(Address, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
     class Meta:
-        db_table = 'designer'
+        db_table = 'maggamDesigner'
         managed = True
-        verbose_name = 'designer'
-        verbose_name_plural = 'designers'
+        verbose_name = 'maggamDesigner'
+        verbose_name_plural = 'maggamDesigners'
     
     def __str__(self):
         return self.shopName
 
+
+class FashionDesigner(models.Model):
+    fullName= models.CharField(default='', max_length=50, null=False)
+    shopName= models.CharField(max_length=50, null=True)
+    userName= models.CharField(default='',max_length=50, null=False)
+    email= models.EmailField(max_length=50, null=True)
+    password = models.CharField(null=True, blank=True, max_length=50)
+    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+    address= models.ForeignKey(Address, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=now, editable=False)
+    updated_at = models.DateTimeField(default=now, editable=False)
+
+    class Meta:
+        db_table = 'fashionDesigner'
+        managed = True
+        verbose_name = 'fashionDesigner'
+        verbose_name_plural = 'fashionDesigners'
+    
+    def __str__(self):
+        return self.shopName
+
+
+class Master(models.Model):
+    fullName= models.CharField(default='', max_length=50, null=False)
+    userName= models.CharField(default='',max_length=50, null=False)
+    email= models.EmailField(max_length=50, null=True)
+    password = models.CharField(null=True, blank=True, max_length=50)
+    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+    address= models.ForeignKey(Address, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=now, editable=False)
+    updated_at = models.DateTimeField(default=now, editable=False)
+
+    class Meta:
+        db_table = 'master'
+        managed = True
+        verbose_name = 'master'
+        verbose_name_plural = 'masters'
+    
+    def __str__(self):
+        return self.shopName
 

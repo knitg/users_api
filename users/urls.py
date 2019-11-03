@@ -5,7 +5,8 @@ from . import views
 router = routers.DefaultRouter()
 router.register(r'customer', views.CustomerViewSet)
 router.register(r'tailor', views.TailorViewSet)
-router.register(r'designer', views.DesignerViewSet)
+router.register(r'maggam-designer', views.MaggamDesignerViewSet)
+router.register(r'fashion-designer', views.FashionDesignerViewSet)
 router.register(r'boutique', views.BoutiqueViewSet)
 router.register(r'address', views.AddressViewSet)
 

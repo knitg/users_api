@@ -10,6 +10,7 @@ django = "*"
 djangorestframework = "*"
 mysqlclient = "*"
 gunicorn = "*"
+djangorestframework-simplejwt = "*"
 
 [requires]
 python_version = "3.7"

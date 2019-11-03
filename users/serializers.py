@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Customer, Tailor, Designer, Boutique, Address
+from .models import Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Customer
-        fields = ['id', 'fullName', 'userName', 'email', 'mobileNo',
+        fields = ['id', 'fullName', 'userName', 'email', 'mobileNo', 'password',
         'address', 'created_at', 'updated_at'
         ]
 
@@ -12,22 +12,29 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
 class TailorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tailor
-        fields = ['id', 'fullName', 'shopName','userName', 'email', 'mobileNo',
+        fields = ['id', 'fullName', 'shopName','userName', 'email', 'mobileNo','password',
         'address', 'created_at', 'updated_at'
         ]
 
 
-class DesignerSerializer(serializers.HyperlinkedModelSerializer):
+class MaggamDesignerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Designer        
-        fields = ['id', 'fullName', 'shopName','userName', 'email', 'mobileNo',
+        model = MaggamDesigner        
+        fields = ['id', 'fullName', 'shopName','userName', 'email', 'mobileNo','password',
+        'address', 'created_at', 'updated_at'
+        ]
+
+class FashionDesignerSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = FashionDesigner        
+        fields = ['id', 'fullName', 'shopName','userName', 'email', 'mobileNo','password',
         'address', 'created_at', 'updated_at'
         ]
 
 class BoutiqueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Boutique
-        fields = ['id', 'fullName', 'shopName','userName', 'email', 'mobileNo',
+        fields = ['id', 'fullName', 'shopName','userName', 'email', 'mobileNo','password',
         'address', 'created_at', 'updated_at'
         ]
 

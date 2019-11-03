@@ -71,6 +71,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'users_api.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -78,7 +84,7 @@ WSGI_APPLICATION = 'users_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'knit_users',
+        'NAME': 'users_db',
         'USER': 'knit',
         'PASSWORD':'site',
         'HOST':'localhost',
