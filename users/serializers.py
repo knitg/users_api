@@ -1,5 +1,13 @@
 from rest_framework import serializers
-from .models import Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address
+from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address
+
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'phone', 'userName',)
+
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

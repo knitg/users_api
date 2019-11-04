@@ -1,9 +1,14 @@
 from django.shortcuts import render
-from rest_framework import viewsets
-from .serializers import CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer
-from .models import Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor
+from rest_framework import viewsets, generics
+from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer
+from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor
 
 # Create your views here.
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer

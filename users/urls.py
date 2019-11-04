@@ -3,6 +3,7 @@ from rest_framework import routers
 from . import views
 
 router = routers.DefaultRouter()
+router.register(r'user', views.UserViewSet)
 router.register(r'customer', views.CustomerViewSet)
 router.register(r'tailor', views.TailorViewSet)
 router.register(r'maggam-designer', views.MaggamDesignerViewSet)

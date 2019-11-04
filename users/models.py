@@ -1,6 +1,78 @@
 from django.db import models
 from datetime import datetime
 from django.utils.timezone import now
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
+class UserManager(BaseUserManager):
+    use_in_migrations = True
+
+    def create_user(self, userName, phone, email=None, password=None):
+        if not phone:
+            raise ValueError('Users must have an Phone number')
+           
+        user = self.model(
+            userName = userName,
+            phone = phone,
+            email = self.normalize_email(email)
+        )
+        
+        user.is_admin =False
+        user.is_active =True
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, userName=None, phone=None, email=None, password=None, **extra_fields):
+        extra_fields.setdefault('is_superuser', True)
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+        
+        user = self.create_user(userName, phone, email=email, password=password)
+        user.is_admin = True 
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser):
+    userName = models.CharField("User Name", max_length=50, unique=True)
+    phone = models.CharField("Phone Number", max_length=50, unique=True)
+    email = models.EmailField("Email Address", unique=True)
+    password = models.CharField('password', max_length=128)
+    is_admin = models.IntegerField(default=False)
+    is_staff = models.IntegerField(default=False)
+    is_active = models.IntegerField(default=False)
+    is_superuser = models.IntegerField(default=False)
+
+    objects = UserManager()
+
+    @property
+    def is_superuser(self):
+        return self.is_admin
+
+    @property
+    def is_staff(self):
+        return self.is_admin
+
+    def has_perm(self, perm, obj=None):
+        return self.is_admin
+
+    def has_module_perms(self, app_label):
+        return self.is_admin
+
+    USERNAME_FIELD = 'phone'
+    REQUIRED_FIELDS = ['userName' ]
+
+    class Meta:
+        db_table = 'user'
+        managed = True
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
+
+    def __str__(self):
+        return self.phone
+
+    def __unicode__(self):
+        return 
 
 
 class Address(models.Model):
