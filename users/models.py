@@ -2,7 +2,7 @@ from django.db import models
 from datetime import datetime
 from django.utils.timezone import now
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
+from django.conf import settings
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -36,8 +36,17 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     userName = models.CharField("User Name", max_length=50, unique=True)
     phone = models.CharField("Phone Number", max_length=50, unique=True)
-    email = models.EmailField("Email Address", unique=True)
-    password = models.CharField('password', max_length=128)
+    email = models.EmailField("Email Address", blank=True, null= True)
+    password = models.CharField('password', max_length=128, null=False)
+    
+    ''' Roles here '''
+    is_customer= models.BooleanField('User is Customer', default=False)
+    is_tailor= models.BooleanField('User is Tailor', default=False)
+    is_master= models.BooleanField('User is Master', default=False)
+    is_maggam_designer= models.BooleanField('User is Maggam Designer', default=False)
+    is_fashion_designer= models.BooleanField('User is Fashion Designer', default=False)
+    is_boutique= models.BooleanField('User is Boutique', default=False)
+    
     is_admin = models.IntegerField(default=False)
     is_staff = models.IntegerField(default=False)
     is_active = models.IntegerField(default=False)
@@ -99,11 +108,8 @@ class Address(models.Model):
 
 # Create your models here.
 class Customer(models.Model):
-    fullName= models.CharField(default='',max_length=50, null=False)
-    userName= models.CharField(default='',max_length=50, null=False)
-    email= models.EmailField(max_length=50, null=True)
-    mobileNo= models.CharField(null=True, max_length=50, blank=True)
-    password = models.CharField(null=True, blank=True, max_length=50)
+    name= models.CharField(null=True, max_length=80)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
     address= models.ManyToManyField(Address)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
@@ -119,12 +125,8 @@ class Customer(models.Model):
 
 
 class Tailor(models.Model):
-    fullName= models.CharField(default='',max_length=50, null=False)
-    shopName= models.CharField(max_length=50, null=True)
-    userName= models.CharField(default='',max_length=50, null=False)
-    email= models.EmailField(max_length=50, null=True)
-    password = models.CharField(null=True, blank=True, max_length=50)
-    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+    name= models.CharField(null=True, max_length=80)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
     address= models.ForeignKey(Address, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
@@ -140,12 +142,8 @@ class Tailor(models.Model):
 
 
 class Boutique(models.Model):
-    fullName= models.CharField(default='',max_length=50, null=False)
-    shopName= models.CharField(max_length=50, null=True)
-    userName= models.CharField(default='',max_length=50, null=False)
-    email= models.EmailField(max_length=50, null=True)
-    password = models.CharField(null=True, blank=True, max_length=50)
-    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+    name= models.CharField(null=True, max_length=80)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
     address= models.ForeignKey(Address, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
@@ -160,13 +158,9 @@ class Boutique(models.Model):
         return self.shopName
 
 
-class MaggamDesigner(models.Model):
-    fullName= models.CharField(default='', max_length=50, null=False)
-    shopName= models.CharField(max_length=50, null=True)
-    userName= models.CharField(default='',max_length=50, null=False)
-    email= models.EmailField(max_length=50, null=True)
-    password = models.CharField(null=True, blank=True, max_length=50)
-    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+class MaggamDesigner(models.Model):  
+    name= models.CharField(null=True, max_length=80)  
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
     address= models.ForeignKey(Address, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
@@ -181,13 +175,9 @@ class MaggamDesigner(models.Model):
         return self.shopName
 
 
-class FashionDesigner(models.Model):
-    fullName= models.CharField(default='', max_length=50, null=False)
-    shopName= models.CharField(max_length=50, null=True)
-    userName= models.CharField(default='',max_length=50, null=False)
-    email= models.EmailField(max_length=50, null=True)
-    password = models.CharField(null=True, blank=True, max_length=50)
-    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+class FashionDesigner(models.Model):    
+    firmName= models.CharField(null=True, max_length=80)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
     address= models.ForeignKey(Address, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
@@ -202,12 +192,9 @@ class FashionDesigner(models.Model):
         return self.shopName
 
 
-class Master(models.Model):
-    fullName= models.CharField(default='', max_length=50, null=False)
-    userName= models.CharField(default='',max_length=50, null=False)
-    email= models.EmailField(max_length=50, null=True)
-    password = models.CharField(null=True, blank=True, max_length=50)
-    mobileNo= models.CharField(null=True, max_length=50, blank=True)
+class Master(models.Model):    
+    name= models.CharField(null=True, max_length=80)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
     address= models.ForeignKey(Address, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
