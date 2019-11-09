@@ -10,6 +10,7 @@ router.register(r'maggam-designer', views.MaggamDesignerViewSet)
 router.register(r'fashion-designer', views.FashionDesignerViewSet)
 router.register(r'boutique', views.BoutiqueViewSet)
 router.register(r'address', views.AddressViewSet)
+router.register(r'upload', views.ImageViewSet, base_name='upload')
 
 urlpatterns = [ 
     path('', include(router.urls)),

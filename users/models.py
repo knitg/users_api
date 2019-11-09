@@ -3,18 +3,22 @@ from datetime import datetime
 from django.utils.timezone import now
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
+from model_utils import Choices
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, userName, phone, email=None, password=None):
+    def create_user(self, userName, phone, user_type='CUSTOMER', user_role='GUEST', email=None, password=None):
         if not phone:
             raise ValueError('Users must have an Phone number')
            
         user = self.model(
             userName = userName,
             phone = phone,
-            email = self.normalize_email(email)
+            email = self.normalize_email(email),
+            user_type = user_type,
+            user_role= user_role
         )
+        user.set_password(password)
         
         user.is_admin =False
         user.is_active =True
@@ -22,7 +26,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, userName=None, phone=None, email=None, password=None, **extra_fields):
+    def create_superuser(self, userName=None, phone=None, user_type='CUSTOMER', user_role='GUEST', email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_superuser', True)
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
@@ -31,21 +35,30 @@ class UserManager(BaseUserManager):
         user.is_admin = True 
         user.save(using=self._db)
         return user
-
-
 class User(AbstractBaseUser):
+    USER_TYPES = Choices(
+       ('CUSTOMER', 'CUSTOMER'),
+       ('TAILOR', 'TAILOR'),
+       ('BOUTIQUE', 'BOUTIQUE'),
+       ('MASTER', 'MASTER'),
+       ('MAGGAM_DESIGNER', 'MAGGAM DESIGNER'),
+       ('FASHION_DESIGNER', 'FASHION DESIGNER'),
+    )
+
+    USER_ROLE = Choices(
+        ('USER', 'USER'),
+        ('ADMIN', 'ADMIN'),
+        ('LEADER', 'LEADER'),
+        ('SUPER_ADMIN', 'SUPER ADMIN'),
+        ('GUEST', 'GUEST'),
+        ('DEL_BOY', 'DELIVERY BOY'),
+    )
     userName = models.CharField("User Name", max_length=50, unique=True)
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)
-    
-    ''' Roles here '''
-    is_customer= models.BooleanField('User is Customer', default=False)
-    is_tailor= models.BooleanField('User is Tailor', default=False)
-    is_master= models.BooleanField('User is Master', default=False)
-    is_maggam_designer= models.BooleanField('User is Maggam Designer', default=False)
-    is_fashion_designer= models.BooleanField('User is Fashion Designer', default=False)
-    is_boutique= models.BooleanField('User is Boutique', default=False)
+    user_type = models.CharField(max_length=80, choices=USER_TYPES, default=USER_TYPES.CUSTOMER)
+    user_role = models.CharField(max_length=80, choices=USER_ROLE, default=USER_ROLE.GUEST)
     
     is_admin = models.IntegerField(default=False)
     is_staff = models.IntegerField(default=False)
@@ -69,7 +82,7 @@ class User(AbstractBaseUser):
         return self.is_admin
 
     USERNAME_FIELD = 'phone'
-    REQUIRED_FIELDS = ['userName' ]
+    REQUIRED_FIELDS = ['userName', 'user_type', 'user_role']
 
     class Meta:
         db_table = 'user'
@@ -108,9 +121,9 @@ class Address(models.Model):
 
 # Create your models here.
 class Customer(models.Model):
-    name= models.CharField(null=True, max_length=80)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
-    address= models.ManyToManyField(Address)
+    name= models.CharField(null=True, max_length=80,  default=None)  
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -125,9 +138,9 @@ class Customer(models.Model):
 
 
 class Tailor(models.Model):
-    name= models.CharField(null=True, max_length=80)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
-    address= models.ForeignKey(Address, on_delete=models.CASCADE)
+    name= models.CharField(null=True, max_length=80,  default=None)  
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -142,9 +155,9 @@ class Tailor(models.Model):
 
 
 class Boutique(models.Model):
-    name= models.CharField(null=True, max_length=80)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
-    address= models.ForeignKey(Address, on_delete=models.CASCADE)
+    name= models.CharField(null=True, max_length=80,  default=None)  
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -159,9 +172,9 @@ class Boutique(models.Model):
 
 
 class MaggamDesigner(models.Model):  
-    name= models.CharField(null=True, max_length=80)  
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
-    address= models.ForeignKey(Address, on_delete=models.CASCADE)
+    name= models.CharField(null=True, max_length=80,  default=None)  
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -176,9 +189,9 @@ class MaggamDesigner(models.Model):
 
 
 class FashionDesigner(models.Model):    
-    firmName= models.CharField(null=True, max_length=80)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
-    address= models.ForeignKey(Address, on_delete=models.CASCADE)
+    name= models.CharField(null=True, max_length=80,  default=None)  
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -193,9 +206,9 @@ class FashionDesigner(models.Model):
 
 
 class Master(models.Model):    
-    name= models.CharField(null=True, max_length=80)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, default=True)
-    address= models.ForeignKey(Address, on_delete=models.CASCADE)
+    name= models.CharField(null=True, max_length=80,  default=None)  
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -207,4 +220,21 @@ class Master(models.Model):
     
     def __str__(self):
         return self.shopName
+
+def nameFile(instance, filename):
+    imgpath= '/'.join(['images', str(instance.name), filename])
+    return imgpath
+
+class MyFile(models.Model):
+    description = models.CharField(max_length=255)
+    image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+
+
+
+
+
+
+
+
+
 
