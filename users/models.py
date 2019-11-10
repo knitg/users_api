@@ -4,6 +4,24 @@ from django.utils.timezone import now
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from model_utils import Choices
+
+
+def nameFile(instance, filename):
+    imgpath= '/'.join(['images', str(instance.source), filename])
+    return imgpath
+
+class File(models.Model):
+    description = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+    source = models.CharField(blank=True, null=True, default='customer', max_length=50)
+    size = models.IntegerField(blank=True, null=True, default=0)
+    class Meta:
+        db_table = 'file'
+        managed = True
+
+    def __str__(self):
+        return self.file.name
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -35,6 +53,7 @@ class UserManager(BaseUserManager):
         user.is_admin = True 
         user.save(using=self._db)
         return user
+
 class User(AbstractBaseUser):
     USER_TYPES = Choices(
        ('CUSTOMER', 'CUSTOMER'),
@@ -57,6 +76,8 @@ class User(AbstractBaseUser):
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)
+    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+    # image_size = models.IntegerField(blank=True, null=True)
     user_type = models.CharField(max_length=80, choices=USER_TYPES, default=USER_TYPES.CUSTOMER)
     user_role = models.CharField(max_length=80, choices=USER_ROLE, default=USER_ROLE.GUEST)
     
@@ -96,7 +117,6 @@ class User(AbstractBaseUser):
     def __unicode__(self):
         return 
 
-
 class Address(models.Model):
     address_line_1= models.CharField(default='', max_length=50)
     address_line_2= models.CharField(max_length=50, null=True)
@@ -122,6 +142,8 @@ class Address(models.Model):
 # Create your models here.
 class Customer(models.Model):
     name= models.CharField(null=True, max_length=80,  default=None)  
+    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -139,7 +161,10 @@ class Customer(models.Model):
 
 class Tailor(models.Model):
     name= models.CharField(null=True, max_length=80,  default=None)  
+    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+    myfile = models.ForeignKey(File, on_delete=models.CASCADE, default=None, null=False, related_name='myfiles')
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
@@ -156,6 +181,8 @@ class Tailor(models.Model):
 
 class Boutique(models.Model):
     name= models.CharField(null=True, max_length=80,  default=None)  
+    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -173,6 +200,8 @@ class Boutique(models.Model):
 
 class MaggamDesigner(models.Model):  
     name= models.CharField(null=True, max_length=80,  default=None)  
+    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -190,6 +219,8 @@ class MaggamDesigner(models.Model):
 
 class FashionDesigner(models.Model):    
     name= models.CharField(null=True, max_length=80,  default=None)  
+    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -207,6 +238,8 @@ class FashionDesigner(models.Model):
 
 class Master(models.Model):    
     name= models.CharField(null=True, max_length=80,  default=None)  
+    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -220,21 +253,6 @@ class Master(models.Model):
     
     def __str__(self):
         return self.shopName
-
-def nameFile(instance, filename):
-    imgpath= '/'.join(['images', str(instance.image.name), filename])
-    return imgpath
-
-class File(models.Model):
-    description = models.CharField(max_length=255, blank=True, null=True)
-    image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
-
-    class Meta:
-        db_table = 'file'
-        managed = True
-
-    def __str__(self):
-        return self.file.name
 
 
 

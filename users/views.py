@@ -44,6 +44,7 @@ class BoutiqueViewSet(viewsets.ModelViewSet):
 class TailorViewSet(viewsets.ModelViewSet):
     queryset = Tailor.objects.all()
     serializer_class = TailorSerializer
+    parser_classes = (MultiPartParser, FormParser,)
 
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()

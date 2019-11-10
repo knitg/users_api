@@ -1,13 +1,15 @@
 from rest_framework import serializers
 from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, File
 
-
-
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
         fields = ('image','description')
 
+    def create(self, validated_data):
+        validated_data['source'] = 'tailor'
+        mydata = validated_data
+        return File.objects.create(**validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,7 +23,8 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer(required=False)
     class Meta:
         model = Customer
-        fields = ['user','name', 'address']
+        # fields = ['user','name', 'address']
+        fields = "__all__"
 
     def create(self, validated_data):
         users_data = validated_data.pop('user')
@@ -34,12 +37,14 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
 
 class TailorSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer(many=False)
+    myfile = ImageSerializer(many=True)
     
     # user = serializers.HyperlinkedRelatedField(view_name='user',queryset=User.objects.all())
     
     class Meta:
         model = Tailor
-        fields = ['user','name', 'address']
+        fields = ['myfile', 'user','name', 'address']
+        # fields = "__all__"
 
     def create(self, validated_data):
         users_data = validated_data.pop('user')
@@ -56,7 +61,8 @@ class TailorSerializer(serializers.HyperlinkedModelSerializer):
 class MaggamDesignerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MaggamDesigner 
-        fields = ['user','name', 'address']
+        # fields = ['user','name', 'address']
+        fields = "__all__"
 
     def create(self, validated_data):
         users_data = validated_data.pop('user')
@@ -69,7 +75,8 @@ class MaggamDesignerSerializer(serializers.HyperlinkedModelSerializer):
 class FashionDesignerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FashionDesigner        
-        fields = ['user','name', 'address']
+        # fields = ['user','name', 'address']
+        fields = "__all__"
 
     def create(self, validated_data):
         users_data = validated_data.pop('user')
@@ -81,7 +88,8 @@ class FashionDesignerSerializer(serializers.HyperlinkedModelSerializer):
 class BoutiqueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Boutique
-        fields = ['user','name', 'address']
+        # fields = ['user','name', 'address']
+        fields = "__all__"
 
     def create(self, validated_data):
         users_data = validated_data.pop('user')
