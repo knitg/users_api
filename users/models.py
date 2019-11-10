@@ -222,12 +222,19 @@ class Master(models.Model):
         return self.shopName
 
 def nameFile(instance, filename):
-    imgpath= '/'.join(['images', str(instance.name), filename])
+    imgpath= '/'.join(['images', str(instance.image.name), filename])
     return imgpath
 
-class MyFile(models.Model):
-    description = models.CharField(max_length=255)
+class File(models.Model):
+    description = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
+
+    class Meta:
+        db_table = 'file'
+        managed = True
+
+    def __str__(self):
+        return self.file.name
 
 
 

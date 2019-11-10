@@ -1,12 +1,25 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
 from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer, ImageSerializer
-from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, MyFile
-
+from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, File
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 # Create your views here.
-class ImageViewSet(viewsets.ModelViewSet):    
-    queryset = MyFile.objects.all()
+
+class ImageViewSet(viewsets.ModelViewSet):
+    queryset = File.objects.all()
     serializer_class = ImageSerializer
+    
+    def create(self, request, *args, **kwargs):
+        image_serializer = ImageSerializer(data=request.data)
+        if image_serializer.is_valid():
+            image_serializer.save()
+            return Response(image_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

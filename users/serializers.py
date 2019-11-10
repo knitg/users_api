@@ -1,30 +1,20 @@
 from rest_framework import serializers
-from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, MyFile
+from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, File
 
 
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MyFile
+        model = File
         fields = ('image','description')
 
-    def create(self, validated_data):
-        myobj = {}
-        myobj['description'] = validated_data.pop('description')
-        myobj['image'] = validated_data.pop('image')
-        # images_data = validated_data.pop('image')
-        myfile = MyFile.objects.create(myobj)
-        myfile.save()
-        return myfile
 
 class UserSerializer(serializers.ModelSerializer):
-    
-    images = ImageSerializer(source='image_set', many=True, read_only=True)
     class Meta:
         model = User
-        # fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role','images',)
-        fields = '__all__'
-    
+        fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role')
+        # fields = '__all__'
+     
 
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
