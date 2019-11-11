@@ -7,94 +7,136 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ('image','description')
 
     def create(self, validated_data):
-        validated_data['source'] = 'tailor'
-        mydata = validated_data
+        # mydata = validated_data
+        # mydata['source'] = 'tailor'
         return File.objects.create(**validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=False)
     class Meta:
         model = User
-        fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role')
+        fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
         # fields = '__all__'
+    def create(self, validated_data):
+        ## Image data 
+        image_data = validated_data.pop('images')
+        images = File.objects.create(**image_data)
+        images.save()
+
+        user = User.objects.create_user(images=images, **validated_data)
+        user.save()
+        return user
      
 
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
-    user = UserSerializer(required=False)
+    user = UserSerializer(many=False)
     class Meta:
         model = Customer
-        # fields = ['user','name', 'address']
-        fields = "__all__"
-
+        fields = [ 'name','user', 'address']
+ 
     def create(self, validated_data):
+        ## User data 
+        
         users_data = validated_data.pop('user')
-        user = User.objects.create_user(**users_data)
+        
+        image_data = users_data['images']
+        # if (users_data['user_type'] != 'CUSTOMER'):
+        #     raise ValueError('User type should be tailor')
+        #     return
+        user = User.objects.create(**users_data)
         user.save()
+
+        ## Customer data 
         customer = Customer.objects.create(user=user, **validated_data)
         return customer
-    
-
 
 class TailorSerializer(serializers.HyperlinkedModelSerializer):
-    user = UserSerializer(many=False)
-    myfile = ImageSerializer(many=True)
-    
-    # user = serializers.HyperlinkedRelatedField(view_name='user',queryset=User.objects.all())
-    
+    user = UserSerializer(many=False)    
     class Meta:
         model = Tailor
-        fields = ['myfile', 'user','name', 'address']
+        fields = [ 'name','user', 'address']
         # fields = "__all__"
 
     def create(self, validated_data):
+        ## User data 
         users_data = validated_data.pop('user')
-        if (users_data['user_type'] != 'TAILOR'):
-            raise ValueError('User type should be tailor')
-            return
+        # if (users_data['user_type'] != 'TAILOR'):
+        #     raise ValueError('User type should be tailor')
+        #     return
         user = User.objects.create_user(**users_data)
         user.save()
+
+        ## Tailor data 
         tailor = Tailor.objects.create(user=user, **validated_data)
         return tailor
     
 
 
 class MaggamDesignerSerializer(serializers.HyperlinkedModelSerializer):
+    user = UserSerializer(many=False)
     class Meta:
         model = MaggamDesigner 
-        # fields = ['user','name', 'address']
-        fields = "__all__"
+        fields = [ 'name','user', 'address']
 
+    
     def create(self, validated_data):
+        ## User data 
         users_data = validated_data.pop('user')
+        # if (users_data['user_type'] != 'TAILOR'):
+        #     raise ValueError('User type should be tailor')
+        #     return
         user = User.objects.create_user(**users_data)
         user.save()
+
+        ## MaggamDesigner data 
         maggam_designer = MaggamDesigner.objects.create(user=user, **validated_data)
         return maggam_designer
 
 
 class FashionDesignerSerializer(serializers.HyperlinkedModelSerializer):
+    user = UserSerializer(many=False) 
     class Meta:
         model = FashionDesigner        
         # fields = ['user','name', 'address']
-        fields = "__all__"
-
+        fields = [ 'name','user', 'address']
+    
     def create(self, validated_data):
+
+        ## User data 
         users_data = validated_data.pop('user')
+        # if (users_data['user_type'] != 'TAILOR'):
+        #     raise ValueError('User type should be tailor')
+        #     return
         user = User.objects.create_user(**users_data)
         user.save()
+
+        ## FashionDesigner data 
         fashion_designer = FashionDesigner.objects.create(user=user, **validated_data)
         return fashion_designer
 
 class BoutiqueSerializer(serializers.HyperlinkedModelSerializer):
+    user = UserSerializer(many=False) 
     class Meta:
         model = Boutique
         # fields = ['user','name', 'address']
-        fields = "__all__"
+        fields = [ 'name','user', 'address']
 
     def create(self, validated_data):
+        ## Image data 
+        image_data = validated_data.pop('images')
+        images = File.objects.create(**image_data)
+        images.save()
+
+        ## User data 
         users_data = validated_data.pop('user')
+        # if (users_data['user_type'] != 'TAILOR'):
+        #     raise ValueError('User type should be tailor')
+        #     return
         user = User.objects.create_user(**users_data)
         user.save()
+
+        ## Boutique data 
         boutique = Boutique.objects.create(user=user, **validated_data)
         return boutique
 

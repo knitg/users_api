@@ -46,6 +46,13 @@ class TailorViewSet(viewsets.ModelViewSet):
     serializer_class = TailorSerializer
     parser_classes = (MultiPartParser, FormParser,)
 
+    # def create(self, request, *args, **kwargs):
+    #     image_serializer = ImageSerializer(data=request.data)
+    #     if image_serializer.is_valid():
+    #         image_serializer.save()
+    #     else:
+    #         return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer

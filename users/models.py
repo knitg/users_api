@@ -25,7 +25,7 @@ class File(models.Model):
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, userName, phone, user_type='CUSTOMER', user_role='GUEST', email=None, password=None):
+    def create_user(self, userName, phone, user_type='CUSTOMER', user_role='GUEST', email=None, password=None, images=None):
         if not phone:
             raise ValueError('Users must have an Phone number')
            
@@ -34,7 +34,8 @@ class UserManager(BaseUserManager):
             phone = phone,
             email = self.normalize_email(email),
             user_type = user_type,
-            user_role= user_role
+            user_role= user_role,
+            images=images
         )
         user.set_password(password)
         
@@ -73,11 +74,10 @@ class User(AbstractBaseUser):
         ('DEL_BOY', 'DELIVERY BOY'),
     )
     userName = models.CharField("User Name", max_length=50, unique=True)
+    images = models.ForeignKey(File, on_delete=models.CASCADE, default=None, blank=True, null=True)
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)
-    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
-    # image_size = models.IntegerField(blank=True, null=True)
     user_type = models.CharField(max_length=80, choices=USER_TYPES, default=USER_TYPES.CUSTOMER)
     user_role = models.CharField(max_length=80, choices=USER_ROLE, default=USER_ROLE.GUEST)
     
@@ -142,8 +142,6 @@ class Address(models.Model):
 # Create your models here.
 class Customer(models.Model):
     name= models.CharField(null=True, max_length=80,  default=None)  
-    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
-    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -160,11 +158,8 @@ class Customer(models.Model):
 
 
 class Tailor(models.Model):
-    name= models.CharField(null=True, max_length=80,  default=None)  
-    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
-    # image_size = models.IntegerField(blank=True, null=True)
+    name= models.CharField(null=True, max_length=80,  default=None)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
-    myfile = models.ForeignKey(File, on_delete=models.CASCADE, default=None, null=False, related_name='myfiles')
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
@@ -172,8 +167,6 @@ class Tailor(models.Model):
     class Meta:
         db_table = 'tailor'
         managed = True
-        verbose_name = 'Tailor'
-        verbose_name_plural = 'tailors'
     
     def __str__(self):
         return self.shopName
@@ -181,8 +174,6 @@ class Tailor(models.Model):
 
 class Boutique(models.Model):
     name= models.CharField(null=True, max_length=80,  default=None)  
-    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
-    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -200,8 +191,6 @@ class Boutique(models.Model):
 
 class MaggamDesigner(models.Model):  
     name= models.CharField(null=True, max_length=80,  default=None)  
-    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
-    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -219,8 +208,6 @@ class MaggamDesigner(models.Model):
 
 class FashionDesigner(models.Model):    
     name= models.CharField(null=True, max_length=80,  default=None)  
-    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
-    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
@@ -238,8 +225,6 @@ class FashionDesigner(models.Model):
 
 class Master(models.Model):    
     name= models.CharField(null=True, max_length=80,  default=None)  
-    # image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
-    # image_size = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
