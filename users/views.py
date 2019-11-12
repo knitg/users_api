@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
-from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer, ImageSerializer
-from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, File
+from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer, ImageSerializer, MasterSerializer
+from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, File, Master
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -46,12 +46,9 @@ class TailorViewSet(viewsets.ModelViewSet):
     serializer_class = TailorSerializer
     parser_classes = (MultiPartParser, FormParser,)
 
-    # def create(self, request, *args, **kwargs):
-    #     image_serializer = ImageSerializer(data=request.data)
-    #     if image_serializer.is_valid():
-    #         image_serializer.save()
-    #     else:
-    #         return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class MasterViewSet(viewsets.ModelViewSet):
+    queryset = Master.objects.all()
+    serializer_class = MasterSerializer
 
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
