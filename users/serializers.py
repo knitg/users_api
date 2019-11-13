@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, File, Master
+from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, File, Master, UserType
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,9 +8,18 @@ class ImageSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         mydata = validated_data
-        # mydata['source'] = 'tailor'
         return File.objects.create(**validated_data)
 
+class UserTypeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = UserType
+        fields = "__all__"
+
+    def create(self, validated_data):       
+        ## Role data 
+        userType = UserType.objects.create(**validated_data)
+        return userType
+    
 class UserSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=False)
     class Meta:
@@ -56,8 +65,8 @@ class TailorSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer(many=False)    
     class Meta:
         model = Tailor
-        fields = [ 'name','user', 'address']
-        # fields = "__all__"
+        # fields = [ 'name','user', 'address']
+        fields = "__all__"
 
     def create(self, validated_data):       
         ## User data 

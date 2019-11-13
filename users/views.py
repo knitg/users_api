@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
-from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer, ImageSerializer, MasterSerializer
-from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, File, Master
+from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer, ImageSerializer, MasterSerializer, UserTypeSerializer
+from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, File, Master, UserType
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -24,6 +24,10 @@ class ImageViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class UserTypeViewSet(viewsets.ModelViewSet):
+    queryset = UserType.objects.all()
+    serializer_class = UserTypeSerializer
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
