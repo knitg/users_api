@@ -78,7 +78,7 @@ class User(AbstractBaseUser):
         ('DEL_BOY', 'DELIVERY BOY'),
     )
     userName = models.CharField("User Name", max_length=50, unique=True)
-    images = models.ForeignKey(File, on_delete=models.CASCADE, default=None, blank=True, null=True)
+    images = models.ManyToManyField(File)
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)
