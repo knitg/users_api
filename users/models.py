@@ -38,14 +38,14 @@ class File(models.Model):
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, userName, phone, user_type='CUSTOMER', user_role='GUEST', email=None, password=None, images=None):
+    def create_user(self, userName, phone, user_type=1, user_role='GUEST', email=None, password=None, images=None):
         if not phone:
             raise ValueError('Users must have an Phone number')
            
         user = self.model(
             userName = userName,
             phone = phone,
-            email = self.normalize_email(email),
+            email = email,
             user_type = user_type,
             user_role= user_role,
             images=images
@@ -78,7 +78,7 @@ class User(AbstractBaseUser):
         ('DEL_BOY', 'DELIVERY BOY'),
     )
     userName = models.CharField("User Name", max_length=50, unique=True)
-    images = models.ManyToManyField(File)
+    images = models.ManyToManyField(File, blank=True, null=True, default=None)
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)

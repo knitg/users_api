@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, File, Master, UserType
 
-class ImageSerializer(serializers.ModelSerializer):
+class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = File
-        fields = ('image','description')
+        # fields = ('id', 'image','description')
+        fields = '__all__'
 
     def create(self, validated_data):
         mydata = validated_data
@@ -21,18 +22,22 @@ class UserTypeSerializer(serializers.HyperlinkedModelSerializer):
         return userType
     
 class UserSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(many=False)
+    images = ImageSerializer(many=True, required=False, allow_null=True)
+    userTypes = UserTypeSerializer(many=False, required=False, allow_null=True)
     class Meta:
         model = User
-        fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
-        # fields = '__all__'
-    def create(self, validated_data):
-        ## Image data 
-        image_data = validated_data.pop('images')
-        images = File.objects.create(**image_data)
-        images.save()
+        # fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
+        fields = '__all__'
 
-        user = User.objects.create_user(images=images, **validated_data)
+    def create(self, validated_data):
+        ## Image data initial_data
+        image_data = self.initial_data.pop('images')
+        user_type_data = self.initial_data.pop('user_type')
+        
+        for usertype in user_type_data:
+            userTypes = UserType.objects.filter(pk=usertype)[0]
+
+        user = User.objects.create_user(images=image_data, user_type=userTypes, **self.initial_data)
         user.save()
         return user
      
