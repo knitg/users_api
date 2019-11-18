@@ -47,8 +47,7 @@ class UserManager(BaseUserManager):
             phone = phone,
             email = email,
             user_type = user_type,
-            user_role= user_role,
-            images=images
+            user_role= user_role
         )
         user.set_password(password)
         

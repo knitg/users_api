@@ -4,8 +4,8 @@ from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Bou
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = File
-        # fields = ('id', 'image','description')
-        fields = '__all__'
+        fields = ('id', 'image','description')
+        # fields = '__all__'
 
     def create(self, validated_data):
         mydata = validated_data
@@ -23,25 +23,27 @@ class UserTypeSerializer(serializers.HyperlinkedModelSerializer):
     
 class UserSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, required=False, allow_null=True)
-    userTypes = UserTypeSerializer(many=False, required=False, allow_null=True)
+    # userTypes = UserTypeSerializer(many=False, required=False, allow_null=True) 
     class Meta:
         model = User
         # fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
-        fields = '__all__'
+        fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
+         
 
     def create(self, validated_data):
-        ## Image data initial_data
-        image_data = self.initial_data.pop('images')
-        user_type_data = self.initial_data.pop('user_type')
+        ## Image data 
         
-        for usertype in user_type_data:
-            userTypes = UserType.objects.filter(pk=usertype)[0]
-
-        user = User.objects.create_user(images=image_data, user_type=userTypes, **self.initial_data)
+        # user = User.objects.create_user(images=images, user_type=userTypes, **self.initial_data)
+        user = User.objects.create_user(**validated_data)
         user.save()
+        
+        validated_data['images'] = self.initial_data['images']
+        image_data = validated_data.pop('images')
+        for image in image_data:
+            images = File.objects.create(image=image_data[image], description='HELLLOOOOWWWWWE')
+            images.save()
+            user.images.add(images)
         return user
-     
-
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer(many=False)

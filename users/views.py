@@ -36,23 +36,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         images_arr = []
-        description = request.data.pop('description')
-        for image in request.FILES:
-            pop_images = request.data.pop(image)
-            image_serializer = ImageSerializer(data= {'description': description[0], 'image': request.FILES[image]})
-            if image_serializer.is_valid():
-                image_serializer.save()
-                images_arr.append(image_serializer.instance.id)
-            else:
-                 return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        request.data['images'] = images_arr
+        request.data['images'] = request.FILES
         request.data['user_type'] = int(request.data['user_type'])
 
-        user_serializer = UserSerializer(data= request.data)
+        user_serializer = UserSerializer(data= request.data, context={'request': request})
         if user_serializer.is_valid():
                 user_serializer.save()
+        
+        return Response({'userId':user_serializer.instance.id}, status=status.HTTP_201_CREATED)
 
-        return Response({'image_ids': images_arr}, status=status.HTTP_201_CREATED)
 class UserTypeViewSet(viewsets.ModelViewSet):
     queryset = UserType.objects.all()
     serializer_class = UserTypeSerializer
