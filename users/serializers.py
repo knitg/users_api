@@ -24,14 +24,13 @@ class UserTypeSerializer(serializers.HyperlinkedModelSerializer):
     
 class UserSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, required=False, allow_null=True)
-    user_type = UserTypeSerializer(many=False, required=False, allow_null=True) 
+    # user_type =UserTypeSerializer(many=False, required=False, allow_null=True) 
     class Meta:
         model = User
         fields = ('url', 'userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
          
 
     def create(self, validated_data):
-
         ## Image data 
         user = User.objects.create_user(**validated_data)
         user.save()
