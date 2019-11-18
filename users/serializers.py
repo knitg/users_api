@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, Images, Master, UserType
 
-class ImageSerializer(serializers.HyperlinkedModelSerializer):
+class ImageSerializer(serializers.HyperlinkedModelSerializer): 
+    url = serializers.HyperlinkedIdentityField(view_name='upload-detail', source='images',)
     class Meta:
         model = Images
-        fields = ('id', 'image','description')
+        fields = ('id', 'image','description', 'url')
         # fields = '__all__'
 
     def create(self, validated_data):
@@ -23,15 +24,15 @@ class UserTypeSerializer(serializers.HyperlinkedModelSerializer):
     
 class UserSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, required=False, allow_null=True)
-    # userTypes = UserTypeSerializer(many=False, required=False, allow_null=True) 
+    user_type = UserTypeSerializer(many=False, required=False, allow_null=True) 
     class Meta:
         model = User
         fields = ('url', 'userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
          
 
     def create(self, validated_data):
+
         ## Image data 
-        # user = User.objects.create_user(images=images, user_type=userTypes, **self.initial_data)
         user = User.objects.create_user(**validated_data)
         user.save()
         
