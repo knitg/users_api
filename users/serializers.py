@@ -1,15 +1,15 @@
 from rest_framework import serializers
-from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, File, Master, UserType
+from .models import User, Customer, Tailor, MaggamDesigner, FashionDesigner, Boutique, Address, Images, Master, UserType
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = File
+        model = Images
         fields = ('id', 'image','description')
         # fields = '__all__'
 
     def create(self, validated_data):
         mydata = validated_data
-        return File.objects.create(**validated_data)
+        return Images.objects.create(**validated_data)
 
 class UserTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -26,13 +26,11 @@ class UserSerializer(serializers.ModelSerializer):
     # userTypes = UserTypeSerializer(many=False, required=False, allow_null=True) 
     class Meta:
         model = User
-        # fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
-        fields = ('userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
+        fields = ('url', 'userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
          
 
     def create(self, validated_data):
         ## Image data 
-        
         # user = User.objects.create_user(images=images, user_type=userTypes, **self.initial_data)
         user = User.objects.create_user(**validated_data)
         user.save()
@@ -40,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
         validated_data['images'] = self.initial_data['images']
         image_data = validated_data.pop('images')
         for image in image_data:
-            images = File.objects.create(image=image_data[image], description='HELLLOOOOWWWWWE')
+            images = Images.objects.create(image=image_data[image], description='HELLLOOOOWWWWWE')
             images.save()
             user.images.add(images)
         return user
@@ -58,7 +56,7 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
             raise ValueError('User type should be CUSTOMER')
             return
         image_data = users_data.pop('images')
-        images = File.objects.create(**image_data)
+        images = Images.objects.create(**image_data)
         images.save()
 
         user = User.objects.create_user(images=images, **users_data)
@@ -82,7 +80,7 @@ class TailorSerializer(serializers.HyperlinkedModelSerializer):
             raise ValueError('User type should be TAILOR')
             return
         image_data = users_data.pop('images')
-        images = File.objects.create(**image_data)
+        images = Images.objects.create(**image_data)
         images.save()
 
         user = User.objects.create_user(images=images, **users_data)
@@ -107,7 +105,7 @@ class MaggamDesignerSerializer(serializers.HyperlinkedModelSerializer):
             raise ValueError('User type should be MAGGAM DESIGNER')
             return
         image_data = users_data.pop('images')
-        images = File.objects.create(**image_data)
+        images = Images.objects.create(**image_data)
         images.save()
 
         user = User.objects.create_user(images=images, **users_data)
@@ -132,7 +130,7 @@ class FashionDesignerSerializer(serializers.HyperlinkedModelSerializer):
             raise ValueError('User type should be FASHION DESIGNER')
             return
         image_data = users_data.pop('images')
-        images = File.objects.create(**image_data)
+        images = Images.objects.create(**image_data)
         images.save()
 
         user = User.objects.create_user(images=images, **users_data)
@@ -156,7 +154,7 @@ class BoutiqueSerializer(serializers.HyperlinkedModelSerializer):
             raise ValueError('User type should be BOUTIQUE')
             return
         image_data = users_data.pop('images')
-        images = File.objects.create(**image_data)
+        images = Images.objects.create(**image_data)
         images.save()
 
         user = User.objects.create_user(images=images, **users_data)
@@ -180,7 +178,7 @@ class MasterSerializer(serializers.HyperlinkedModelSerializer):
             raise ValueError('User type should be BOUTIQUE')
             return
         image_data = users_data.pop('images')
-        images = File.objects.create(**image_data)
+        images = Images.objects.create(**image_data)
         images.save()
 
         user = User.objects.create_user(images=images, **users_data)

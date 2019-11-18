@@ -23,17 +23,17 @@ class UserType(models.Model):
     def __str__(self):
         return self.user_type
 
-class File(models.Model):
+class Images(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
     source = models.CharField(blank=True, null=True, default='customer', max_length=50)
     size = models.IntegerField(blank=True, null=True, default=0)
     class Meta:
-        db_table = 'file'
+        db_table = 'images'
         managed = True
 
     def __str__(self):
-        return self.file.name
+        return self.image
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -77,7 +77,7 @@ class User(AbstractBaseUser):
         ('DEL_BOY', 'DELIVERY BOY'),
     )
     userName = models.CharField("User Name", max_length=50, unique=True)
-    images = models.ManyToManyField(File, blank=True, null=True, default=None)
+    images = models.ManyToManyField(Images, blank=True, null=True, default=None)
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)

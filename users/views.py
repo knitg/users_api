@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
 from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer, ImageSerializer, MasterSerializer, UserTypeSerializer
-from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, File, Master, UserType
+from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, Images, Master, UserType
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,7 +12,7 @@ from django.http import JsonResponse
 
 class ImageViewSet(viewsets.ModelViewSet):
     # parser_class = (FileUploadParser,)
-    queryset = File.objects.all()
+    queryset = Images.objects.all()
     serializer_class = ImageSerializer
     parser_classes = (FormParser, MultiPartParser, FileUploadParser) # set parsers if not set in settings. Edited
 
@@ -42,8 +42,10 @@ class UserViewSet(viewsets.ModelViewSet):
         user_serializer = UserSerializer(data= request.data, context={'request': request})
         if user_serializer.is_valid():
                 user_serializer.save()
+                return Response({'userId':user_serializer.instance.id}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response({'userId':user_serializer.instance.id}, status=status.HTTP_201_CREATED)
 
 class UserTypeViewSet(viewsets.ModelViewSet):
     queryset = UserType.objects.all()
