@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
 from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer, ImageSerializer, MasterSerializer, UserTypeSerializer
-from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, Images, Master, UserType
+from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, Image, Master, UserType
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,7 +12,7 @@ from django.http import JsonResponse
 
 class ImageViewSet(viewsets.ModelViewSet):
     # parser_class = (FileUploadParser,)
-    queryset = Images.objects.all()
+    queryset = Image.objects.all()
     serializer_class = ImageSerializer
     parser_classes = (FormParser, MultiPartParser, FileUploadParser) # set parsers if not set in settings. Edited
 
@@ -44,6 +44,36 @@ class UserViewSet(viewsets.ModelViewSet):
                 return Response({'userId':user_serializer.instance.id}, status=status.HTTP_201_CREATED)
         else:
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        ''' Save User using ajax '''
+        # $("input[type='button']").on("click", function(){ 
+        #     formData = new FormData();
+        #     var files = $("#file")[0].files;
+        #     for (var i = 0; i < files.length; i++) {
+        #     var file = files[i];
+        #     formData.append("image"+i, file)
+            
+        #     }
+        #     formData.append("description", 'MAHIIIPAL2222222222');
+        #     formData.append("userName", 'mahi2');
+        #     formData.append("phone", 9700968447);
+        #     formData.append("password", "site11");
+        #     formData.append("email", 'mahi653335@gmail.com');
+        #     formData.append("user_type", [1,2]); // user types
+        #     formData.append("user_role", "ADMIN"); 
+        #     $.ajax({
+        #         url: "http://localhost:8000/api/user/", 
+        #         type: 'POST',      
+        #         data: formData,    
+        #         cache: false,
+        #         contentType: false,
+        #         processData: false,
+        #         success: function(returnhtml){     
+        #             console.log("HELLLOOOOOE")
+        #             return returnhtml;            
+        #         }                 
+        #     });    
+        # })   
         
 
 class UserTypeViewSet(viewsets.ModelViewSet):

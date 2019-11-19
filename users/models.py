@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 from multiselectfield import MultiSelectField
 
 def nameFile(instance, filename):
-    imgpath= '/'.join(['images', str(instance.source), filename])
+    imgpath= '/'.join(['user_images', str(instance.source), filename])
     return imgpath
 
 class UserType(models.Model):    
@@ -21,15 +21,15 @@ class UserType(models.Model):
         verbose_name_plural = 'user_types'
     
     def __str__(self):
-        return self.user_type
+        return self.type
 
-class Images(models.Model):
+class Image(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
     source = models.CharField(blank=True, null=True, default='customer', max_length=50)
     size = models.IntegerField(blank=True, null=True, default=0)
     class Meta:
-        db_table = 'images'
+        db_table = 'image'
         managed = True
 
     def __str__(self):
@@ -76,7 +76,7 @@ class User(AbstractBaseUser):
         ('DEL_BOY', 'DELIVERY BOY'),
     )
     userName = models.CharField("User Name", max_length=50, unique=True)
-    images = models.ManyToManyField(Images, blank=True, null=True, default=None)
+    images = models.ManyToManyField(Image, blank=True, null=True, default=None)
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)
