@@ -37,7 +37,6 @@ class UserViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         images_arr = []
         request.data['images'] = request.FILES
-        request.data['user_type'] = int(request.data['user_type'])
 
         user_serializer = UserSerializer(data= request.data, context={'request': request})
         if user_serializer.is_valid():

@@ -24,7 +24,7 @@ class UserTypeSerializer(serializers.HyperlinkedModelSerializer):
     
 class UserSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, required=False, allow_null=True)
-    # user_type =UserTypeSerializer(many=False, required=False, allow_null=True) 
+    user_type =UserTypeSerializer(many=True, required=False, allow_null=True) 
     class Meta:
         model = User
         fields = ('url', 'userName', 'email', 'phone', 'password', 'user_type', 'user_role', 'images')
@@ -36,11 +36,17 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         
         validated_data['images'] = self.initial_data['images']
+
         image_data = validated_data.pop('images')
         for image in image_data:
             images = Images.objects.create(image=image_data[image], description='HELLLOOOOWWWWWE')
             images.save()
             user.images.add(images)
+        # for userType in validated_data['user_type']:
+        user_types = self.initial_data['user_type'].split(',')
+        usertypes = list(UserType.objects.filter(id__in=user_types))
+        user.user_type.set(usertypes)
+
         return user
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):

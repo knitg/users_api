@@ -46,7 +46,6 @@ class UserManager(BaseUserManager):
             userName = userName,
             phone = phone,
             email = email,
-            user_type = user_type,
             user_role= user_role
         )
         user.set_password(password)
@@ -81,7 +80,7 @@ class User(AbstractBaseUser):
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)
-    user_type = models.ForeignKey(UserType, on_delete=models.CASCADE, default=None, null=False)
+    user_type = models.ManyToManyField(UserType, blank=True, null=True, default=None)
     user_role = models.CharField(max_length=80, choices=USER_ROLE, default=USER_ROLE.GUEST)
     
     is_admin = models.IntegerField(default=False)
