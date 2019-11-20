@@ -9,6 +9,7 @@ from rest_framework import status
 # Create your views here.
 from rest_framework.parsers import FileUploadParser
 from django.http import JsonResponse
+import json
 
 class ImageViewSet(viewsets.ModelViewSet):
     # parser_class = (FileUploadParser,)
@@ -36,12 +37,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         images_arr = []
-        request.data['images'] = request.FILES
+        if request.FILES:
+            request.data['images'] = request.FILES
 
-        user_serializer = UserSerializer(data= request.data, context={'request': request})
+        user_serializer = UserSerializer(data= request.data)
         if user_serializer.is_valid():
-                user_serializer.save()
-                return Response({'userId':user_serializer.instance.id}, status=status.HTTP_201_CREATED)
+            user_serializer.save()
+            return Response({'userId':user_serializer.instance.id}, status=status.HTTP_201_CREATED)
         else:
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
@@ -83,6 +85,29 @@ class UserTypeViewSet(viewsets.ModelViewSet):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    parser_classes = (FormParser, MultiPartParser, FileUploadParser) # set parsers if not set in settings. Edited
+
+    def create(self, request, *args, **kwargs):
+        # set to mutable
+        request.data._mutable = True
+        request.data['images'] = []
+        if request.FILES:
+            request.data['images'] = request.FILES
+
+
+        customer_serializer = CustomerSerializer(data= {'user': request.data, 'address':None, 'images':request.data['images']}, context={'request': request})
+        if customer_serializer.is_valid():
+            customer_serializer.save()
+            return Response({'userId':customer_serializer.instance.id}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # user_serializer = UserSerializer(data= request.data, context={'request': request})
+        # if user_serializer.is_valid():
+        #     user_serializer.save()            
+        # else:
+        #     return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class MaggamDesignerViewSet(viewsets.ModelViewSet):
     queryset = MaggamDesigner.objects.all()
