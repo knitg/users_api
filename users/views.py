@@ -90,24 +90,25 @@ class CustomerViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         # set to mutable
         request.data._mutable = True
+
+        ## Files assigned to request data images
         request.data['images'] = []
         if request.FILES:
             request.data['images'] = request.FILES
-
-
-        customer_serializer = CustomerSerializer(data= {'user': request.data, 'address':None, 'images':request.data['images']}, context={'request': request})
+        
+        ## Files assigned to request data images
+        if request.data.get('user.userName'):
+            customer_serializer = CustomerSerializer(data= request.data)
+        else:
+            customer_serializer = CustomerSerializer(data= {'user': request.data, 'address':None, 'images':request.data['images']}, context={'request': request})
+        
+        ### Customer serializer save initiated
         if customer_serializer.is_valid():
             customer_serializer.save()
-            return Response({'userId':customer_serializer.instance.id}, status=status.HTTP_201_CREATED)
+            return Response({'customerId':customer_serializer.instance.id}, status=status.HTTP_201_CREATED)
         else:
             return Response(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # user_serializer = UserSerializer(data= request.data, context={'request': request})
-        # if user_serializer.is_valid():
-        #     user_serializer.save()            
-        # else:
-        #     return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
 
 class MaggamDesignerViewSet(viewsets.ModelViewSet):
     queryset = MaggamDesigner.objects.all()

@@ -40,14 +40,15 @@ class UserSerializer(serializers.ModelSerializer):
             image_data = validated_data.pop('images')
             for image in image_data:
                 c_image= image_data[image]
-                images = Image.objects.create(image=c_image, description=self.initial_data['description'], source='user_'+str(user.id), size=c_image.size)
+                images = Image.objects.create(image=c_image, description=self.initial_data.get('description'), source='user_'+str(user.id), size=c_image.size)
                 images.save()
                 user.images.add(images)         
 
         # for userType in validated_data['user_type']:
-        user_types = self.initial_data['user_type'].split(',')
-        usertypes = list(UserType.objects.filter(id__in=user_types))
-        user.user_type.set(usertypes)
+        if self.initial_data.get('user_type'):
+            user_types = self.initial_data['user_type'].split(',')
+            usertypes = list(UserType.objects.filter(id__in=user_types))
+            user.user_type.set(usertypes)
 
         return user
 
@@ -59,34 +60,23 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
  
     def create(self, validated_data):
         ## User data 
-        
+        validated_data['user'] = self.initial_data['user']
         users_data = validated_data.pop('user')
-        validated_data['images'] = self.initial_data['images']
+        users_data['images'] = self.initial_data['images']
+        # users_data['user_type'] = self.initial_data.get('user')['user_type']
         # request.data   
-        user_serializer = UserSerializer(data= self.initial_data['user'])
+
+        user_serializer = UserSerializer(data= users_data)
         if user_serializer.is_valid():
             user_serializer.save()
-            validated_data.pop('images')
+            # validated_data.pop('images')
             validated_data['name'] = 'MMMAHIIIAPPPALL'
+            # validated_data['description'] = 'description here..'
             customer = Customer.objects.create(user=user_serializer.instance, **validated_data)
             return customer
         else:
-            return user_serializer
-        # if (users_data['user_type'] != 'CUSTOMER'):
-        #     raise ValueError('User type should be CUSTOMER')
-        #     return
-        # image_data = validated_data.pop('images')
-        # images = []
-        # for image in image_data:
-        #     images = Image.objects.create(**image_data)
-        #     images.save()
-
-        # user = User.objects.create_user(images=images, **users_data)
-        # user.save()
-
-
-
-        ## Customer data 
+            return user_serializer.errors
+        
 
 class TailorSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer(many=False)    
