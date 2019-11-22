@@ -7,30 +7,50 @@ from model_utils import Choices
 from django.utils.translation import gettext as _
 from multiselectfield import MultiSelectField
 
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import sys
+
+
 def nameFile(instance, filename):
     imgpath= '/'.join(['user_images', str(instance.source), filename])
     return imgpath
 
-class UserType(models.Model):    
+class KUserType(models.Model):    
     user_type= models.CharField(null=True, max_length=80,  default=None)  
     description = models.CharField(max_length=150, blank=True, null=True)
     class Meta:
-        db_table = 'user_type'
+        db_table = 'knit_user_type'
         managed = True
-        verbose_name = 'user_type'
-        verbose_name_plural = 'user_types'
+        verbose_name = 'Knit User type'
+        verbose_name_plural = 'Knit User types'
     
     def __str__(self):
         return self.type
 
-class Image(models.Model):
+class KImage(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to=nameFile, max_length=254, blank=True, null=True)
     source = models.CharField(blank=True, null=True, default='customer', max_length=50)
     size = models.IntegerField(blank=True, null=True, default=0)
     class Meta:
-        db_table = 'image'
+        db_table = 'knit_image'
         managed = True
+
+    def save(self, **kwargs):
+        #Opening the uploaded image
+        im = Image.open(self.image)
+        output = BytesIO()
+        # #Resize/modify the image
+        im = im.resize((200, 200), Image.ANTIALIAS)
+		# #after modifications, save it to the output
+        im.save(output, format='PNG', quality=100)
+        
+        #change the imagefield value to be the newley modifed image value
+        self.image = InMemoryUploadedFile(output,'ImageField', "%s.png" %self.image.name.split('.')[0], 'image/png', sys.getsizeof(output), None)
+
+        super(KImage, self).save()
 
     def __str__(self):
         return self.image
@@ -76,11 +96,11 @@ class User(AbstractBaseUser):
         ('DEL_BOY', 'DELIVERY BOY'),
     )
     userName = models.CharField("User Name", max_length=50, unique=True)
-    images = models.ManyToManyField(Image, blank=True, null=True, default=None)
+    images = models.ManyToManyField(KImage, blank=True, null=True, default=None)
     phone = models.CharField("Phone Number", max_length=50, unique=True)
     email = models.EmailField("Email Address", blank=True, null= True)
     password = models.CharField('password', max_length=128, null=False)
-    user_type = models.ManyToManyField(UserType, blank=True, null=True, default=None)
+    user_type = models.ManyToManyField(KUserType, blank=True, null=True, default=None)
     user_role = models.CharField(max_length=80, choices=USER_ROLE, default=USER_ROLE.GUEST)
     
     is_admin = models.IntegerField(default=False)
@@ -119,7 +139,7 @@ class User(AbstractBaseUser):
     def __unicode__(self):
         return 
 
-class Address(models.Model):
+class KAddress(models.Model):
     address_line_1= models.CharField(default='', max_length=50)
     address_line_2= models.CharField(max_length=50, null=True)
     landmark= models.CharField(max_length=50, null=True)
@@ -133,34 +153,34 @@ class Address(models.Model):
     updated_at = models.DateTimeField(default=now, editable=False)
     
     class Meta:
-        db_table = 'address'
+        db_table = 'knit_address'
         managed = True
-        verbose_name = 'address'
-        verbose_name_plural = 'addresses'
+        verbose_name = 'Knit Address'
+        verbose_name_plural = 'Knit Addresses'
     
     def __str__(self):
         return self.landmark
 
 # Create your models here.
-class Customer(models.Model):
+class KCustomer(models.Model):
     name= models.CharField(null=True, max_length=80,  default=None)  
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
+    address = models.ForeignKey(KAddress, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
     class Meta:
-        db_table = 'customer'
+        db_table = 'knit_customer'
         managed = True
-        verbose_name = 'Customer'
-        verbose_name_plural = 'Customers'
+        verbose_name = 'Knit Customer'
+        verbose_name_plural = 'Knit Customers'
     
     def __str__(self):
         return self.userName
 
 
-class Tailor(models.Model):
+class KVendorUser(models.Model):
     name= models.CharField(null=True, max_length=80,  default=None)
     
     start_time = models.DateTimeField(default=now, editable=False)
@@ -173,107 +193,107 @@ class Tailor(models.Model):
     is_emergency_available = models.BooleanField(default=False)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
+    address = models.ForeignKey(KAddress, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
     class Meta:
-        db_table = 'tailor'
+        db_table = 'knit_vendor_user'
         managed = True
     
     def __str__(self):
-        return self.shopName
+        return self.name
 
 
-class Boutique(models.Model):
-    name= models.CharField(null=True, max_length=80,  default=None)  
+# class Boutique(models.Model):
+#     name= models.CharField(null=True, max_length=80,  default=None)  
     
-    start_time = models.DateTimeField(default=now, editable=False)
-    end_time = models.DateTimeField(default=now, editable=False)
-    masters_count = models.IntegerField(blank=True, null=True, default=None)
-    is_weekends = models.BooleanField(default=False, blank=True, null=True)
-    is_weekdays = models.BooleanField(default=True, blank=True, null=True)
-    alternate_days = models.CharField(max_length=20, blank=True, null=True)
-    is_open = models.BooleanField(default=False)
-    is_emergency_available = models.BooleanField(default=False)
+#     start_time = models.DateTimeField(default=now, editable=False)
+#     end_time = models.DateTimeField(default=now, editable=False)
+#     masters_count = models.IntegerField(blank=True, null=True, default=None)
+#     is_weekends = models.BooleanField(default=False, blank=True, null=True)
+#     is_weekdays = models.BooleanField(default=True, blank=True, null=True)
+#     alternate_days = models.CharField(max_length=20, blank=True, null=True)
+#     is_open = models.BooleanField(default=False)
+#     is_emergency_available = models.BooleanField(default=False)
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
-    created_at = models.DateTimeField(default=now, editable=False)
-    updated_at = models.DateTimeField(default=now, editable=False)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+#     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
+#     created_at = models.DateTimeField(default=now, editable=False)
+#     updated_at = models.DateTimeField(default=now, editable=False)
 
-    class Meta:
-        db_table = 'boutique'
-        managed = True
-        verbose_name = 'Boutique'
-        verbose_name_plural = 'boutiques'
+#     class Meta:
+#         db_table = 'boutique'
+#         managed = True
+#         verbose_name = 'Boutique'
+#         verbose_name_plural = 'boutiques'
     
-    def __str__(self):
-        return self.shopName
+#     def __str__(self):
+#         return self.shopName
 
 
-class MaggamDesigner(models.Model):  
-    name= models.CharField(null=True, max_length=80,  default=None)  
+# class MaggamDesigner(models.Model):  
+#     name= models.CharField(null=True, max_length=80,  default=None)  
     
-    freelancer = models.BooleanField(default=False)
-    working_in = models.CharField(max_length=50, blank=True, null=True)
+#     freelancer = models.BooleanField(default=False)
+#     working_in = models.CharField(max_length=50, blank=True, null=True)
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
-    created_at = models.DateTimeField(default=now, editable=False)
-    updated_at = models.DateTimeField(default=now, editable=False)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+#     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
+#     created_at = models.DateTimeField(default=now, editable=False)
+#     updated_at = models.DateTimeField(default=now, editable=False)
 
-    class Meta:
-        db_table = 'maggamDesigner'
-        managed = True
-        verbose_name = 'maggamDesigner'
-        verbose_name_plural = 'maggamDesigners'
+#     class Meta:
+#         db_table = 'maggamDesigner'
+#         managed = True
+#         verbose_name = 'maggamDesigner'
+#         verbose_name_plural = 'maggamDesigners'
     
-    def __str__(self):
-        return self.shopName
+#     def __str__(self):
+#         return self.shopName
 
 
-class FashionDesigner(models.Model):    
-    name= models.CharField(null=True, max_length=80,  default=None)  
+# class FashionDesigner(models.Model):    
+#     name= models.CharField(null=True, max_length=80,  default=None)  
     
-    freelancer = models.BooleanField(default=False)
-    working_in = models.CharField(max_length=50, blank=True, null=True)
+#     freelancer = models.BooleanField(default=False)
+#     working_in = models.CharField(max_length=50, blank=True, null=True)
     
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
-    created_at = models.DateTimeField(default=now, editable=False)
-    updated_at = models.DateTimeField(default=now, editable=False)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+#     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
+#     created_at = models.DateTimeField(default=now, editable=False)
+#     updated_at = models.DateTimeField(default=now, editable=False)
 
-    class Meta:
-        db_table = 'fashionDesigner'
-        managed = True
-        verbose_name = 'fashionDesigner'
-        verbose_name_plural = 'fashionDesigners'
+#     class Meta:
+#         db_table = 'fashionDesigner'
+#         managed = True
+#         verbose_name = 'fashionDesigner'
+#         verbose_name_plural = 'fashionDesigners'
     
-    def __str__(self):
-        return self.shopName
+#     def __str__(self):
+#         return self.shopName
 
-class Master(models.Model):    
-    name= models.CharField(null=True, max_length=80,  default=None)  
+# class Master(models.Model):    
+#     name= models.CharField(null=True, max_length=80,  default=None)  
     
-    available_days = models.CharField(max_length=20, blank=True, null=True)
-    can_hire = models.BooleanField(default=False)
-    working_in = models.CharField(max_length=50, blank=True, null=True)
-    is_emergency_available = models.BooleanField(default=False)
+#     available_days = models.CharField(max_length=20, blank=True, null=True)
+#     can_hire = models.BooleanField(default=False)
+#     working_in = models.CharField(max_length=50, blank=True, null=True)
+#     is_emergency_available = models.BooleanField(default=False)
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
-    created_at = models.DateTimeField(default=now, editable=False)
-    updated_at = models.DateTimeField(default=now, editable=False)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=False)
+#     address = models.ForeignKey(Address, on_delete=models.CASCADE, default=None, null=True)
+#     created_at = models.DateTimeField(default=now, editable=False)
+#     updated_at = models.DateTimeField(default=now, editable=False)
 
-    class Meta:
-        db_table = 'master'
-        managed = True
-        verbose_name = 'master'
-        verbose_name_plural = 'masters'
+#     class Meta:
+#         db_table = 'master'
+#         managed = True
+#         verbose_name = 'master'
+#         verbose_name_plural = 'masters'
     
-    def __str__(self):
-        return self.shopName
+#     def __str__(self):
+#         return self.shopName
 
 
 

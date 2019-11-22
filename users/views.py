@@ -1,33 +1,32 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
-from .serializers import UserSerializer,CustomerSerializer, MaggamDesignerSerializer,FashionDesignerSerializer, TailorSerializer, BoutiqueSerializer, AddressSerializer, ImageSerializer, MasterSerializer, UserTypeSerializer
-from .models import User, Customer, MaggamDesigner,FashionDesigner, Address, Boutique, Tailor, Image, Master, UserType
-from rest_framework.parsers import MultiPartParser, FormParser
+from .serializers import UserSerializer,KCustomerSerializer, KVendorUserSerializer, KAddressSerializer, KImageSerializer, KUserTypeSerializer
+from .models import  User, KCustomer, KVendorUser, KAddress, KImage, KUserType
+from rest_framework.parsers import MultiPartParser, FormParser,FileUploadParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 # Create your views here.
-from rest_framework.parsers import FileUploadParser
 from django.http import JsonResponse
 import json
 
 class ImageViewSet(viewsets.ModelViewSet):
     # parser_class = (FileUploadParser,)
-    queryset = Image.objects.all()
-    serializer_class = ImageSerializer
+    queryset = KImage.objects.all()
+    serializer_class = KImageSerializer
     parser_classes = (FormParser, MultiPartParser, FileUploadParser) # set parsers if not set in settings. Edited
 
     
     def create(self, request, *args, **kwargs):
         images_arr = []
         for image in request.FILES:
-            image_serializer = ImageSerializer(data= {'description': request.data['description'], 'image': request.FILES[image]})
+            image_serializer = KImageSerializer(data= {'description': request.data['description'], 'image': request.FILES[image]})
             if image_serializer.is_valid():
                 image_serializer.save()
                 images_arr.append(image_serializer.instance.id)
+                return Response({'image_ids': images_arr}, status=status.HTTP_201_CREATED)
             else:
                 return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'image_ids': images_arr}, status=status.HTTP_201_CREATED)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -79,12 +78,12 @@ class UserViewSet(viewsets.ModelViewSet):
         
 
 class UserTypeViewSet(viewsets.ModelViewSet):
-    queryset = UserType.objects.all()
-    serializer_class = UserTypeSerializer
+    queryset = KUserType.objects.all()
+    serializer_class = KUserTypeSerializer
 
 class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
+    queryset = KCustomer.objects.all()
+    serializer_class = KCustomerSerializer
     parser_classes = (FormParser, MultiPartParser, FileUploadParser) # set parsers if not set in settings. Edited
 
     def create(self, request, *args, **kwargs):
@@ -98,9 +97,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
         
         ## Files assigned to request data images
         if request.data.get('user.userName'):
-            customer_serializer = CustomerSerializer(data= request.data)
+            customer_serializer = KCustomerSerializer(data= request.data)
         else:
-            customer_serializer = CustomerSerializer(data= {'user': request.data, 'address':None, 'images':request.data['images']}, context={'request': request})
+            customer_serializer = KCustomerSerializer(data= {'user': request.data, 'address':None, 'images':request.data['images']}, context={'request': request})
         
         ### Customer serializer save initiated
         if customer_serializer.is_valid():
@@ -110,27 +109,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return Response(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MaggamDesignerViewSet(viewsets.ModelViewSet):
-    queryset = MaggamDesigner.objects.all()
-    serializer_class = MaggamDesignerSerializer
-
-class FashionDesignerViewSet(viewsets.ModelViewSet):
-    queryset = FashionDesigner.objects.all()
-    serializer_class = FashionDesignerSerializer
-
-class BoutiqueViewSet(viewsets.ModelViewSet):
-    queryset = Boutique.objects.all()
-    serializer_class = BoutiqueSerializer
-
-class TailorViewSet(viewsets.ModelViewSet):
-    queryset = Tailor.objects.all()
-    serializer_class = TailorSerializer
-    parser_classes = (MultiPartParser, FormParser,)
-
-class MasterViewSet(viewsets.ModelViewSet):
-    queryset = Master.objects.all()
-    serializer_class = MasterSerializer
+class VendorUserViewSet(viewsets.ModelViewSet):
+    queryset = KVendorUser.objects.all()
+    serializer_class = KVendorUserSerializer
 
 class AddressViewSet(viewsets.ModelViewSet):
-    queryset = Address.objects.all()
-    serializer_class = AddressSerializer
+    queryset = KAddress.objects.all()
+    serializer_class = KAddressSerializer
