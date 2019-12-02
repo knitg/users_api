@@ -4,14 +4,14 @@ from django.utils.timezone import now
 
 class KAddress(models.Model):
     address_line_1= models.CharField(default='', max_length=50)
-    address_line_2= models.CharField(max_length=50, null=True)
-    landmark= models.CharField(max_length=50, null=True)
-    postalCode= models.IntegerField(null=True)
-    latitude= models.FloatField(max_length=20, null=True)
-    longitude= models.FloatField(max_length=20, null=True)
-    geoAddress= models.CharField(max_length=100, null=True)
+    address_line_2= models.CharField(max_length=50, blank=True, null=True, default=None)
+    landmark= models.CharField(max_length=50, blank=True, null=True, default=None)
+    postalCode= models.IntegerField(max_length=20, null=False)
+    latitude= models.FloatField(max_length=20, blank=True, null=True, default=None)
+    longitude= models.FloatField(max_length=20, blank=True, null=True, default=None)
+    geoAddress= models.CharField(max_length=100, blank=True, null=True, default=None)
     city= models.CharField(max_length=25, null=True)
-    state= models.CharField(max_length=25, null=True)
+    state= models.CharField(max_length=25, blank=True, null=True, default=None)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
     

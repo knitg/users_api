@@ -64,10 +64,10 @@ class User(AbstractBaseUser):
     user_type = models.ManyToManyField(KUserType, blank=True, null=True, default=None)
     user_role = models.CharField(max_length=80, choices=USER_ROLE, default=USER_ROLE.GUEST)
     
-    is_admin = models.IntegerField(default=False)
-    is_staff = models.IntegerField(default=False)
-    is_active = models.IntegerField(default=False)
-    is_superuser = models.IntegerField(default=False)
+    is_admin = models.IntegerField(default=False, blank=True, null=True)
+    is_staff = models.IntegerField(default=False, blank=True, null=True)
+    is_active = models.IntegerField(default=False, blank=True, null=True)
+    is_superuser = models.IntegerField(blank=True, null=True, default=False)
 
     objects = UserManager()
 

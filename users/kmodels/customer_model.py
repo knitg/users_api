@@ -9,7 +9,7 @@ class KCustomer(models.Model):
     name= models.CharField(null=True, max_length=80,  default=None)  
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=False)
-    address = models.ForeignKey(KAddress, on_delete=models.CASCADE, default=None, null=True)
+    address = models.ForeignKey(KAddress, on_delete=models.CASCADE, default=None, null=True, blank=True)
     created_at = models.DateTimeField(default=now, editable=False)
     updated_at = models.DateTimeField(default=now, editable=False)
 
@@ -20,5 +20,5 @@ class KCustomer(models.Model):
         verbose_name_plural = 'Knit Customers'
     
     def __str__(self):
-        return self.userName
+        return self.name
 
