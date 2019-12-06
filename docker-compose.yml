@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  users_api:
+    image: users_api
+    build: .
+    ports:
+      - 3000:3000

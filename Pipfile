@@ -21,7 +21,6 @@ google-auth-oauthlib = "*"
 django-multiselectfield = "*"
 django-resized = "*"
 wand = "*"
-imagemagick = "*"
 
 [requires]
 python_version = "3.7"
