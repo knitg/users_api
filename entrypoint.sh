@@ -5,5 +5,6 @@ python manage.py makemigrations
 python manage.py migrate
 # Start Gunicorn processes
 echo "Starting Gunicorn."
-# exec gunicorn -b 0.0.0.0:8000 --access-logfile - "config.wsgi:application"
-exec python manage.py runserver
+exec gunicorn --bind 0.0.0.0:8030 -w 3 users_api.wsgi
+
+# exec python manage.py runserver

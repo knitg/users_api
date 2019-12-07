@@ -12,7 +12,7 @@ def nameFile(instance, filename):
 
 class KImage(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
-    image = models.ImageField(upload_to=nameFile, max_length=254, blank=False, null=False)
+    image = models.ImageField(upload_to=nameFile, max_length=254, blank=False, null=False, default=None)
     source = models.CharField(blank=True, null=True, default='customer', max_length=50)
     size = models.IntegerField(blank=True, null=True, default=0)
     class Meta:

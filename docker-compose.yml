@@ -16,12 +16,12 @@ services:
     networks:
       - main  # Add the container to the network "main"
   web:
-    build: .
+    image: users_django
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/my_app_dir
     ports:
-      - "8000:8000"
+      - "8001:8030"
     depends_on:
       - mysqldb
     networks:
