@@ -1,8 +1,31 @@
-version: '2.1'
+version: '3'
 
 services:
-  users_api:
-    image: users_api
-    build: .
+  mysqldb:
+    image: mysql:5.7
+    expose:
+      - "3306"
     ports:
-      - 3000:3000
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'my-app-db'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+    networks:
+      - main  # Add the container to the network "main"
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/my_app_dir
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysqldb
+    networks:
+      - main  # Add the container to the network "main"
+
+networks:
+  main:

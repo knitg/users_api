@@ -25,7 +25,7 @@ SECRET_KEY = '(4j9r0^5f@o=ds($wgsxtq7ki0r7g6^fo#v698d*z6_z5873g='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -104,16 +104,24 @@ REST_AUTH_SERIALIZERS = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'knit_users',
+    #     'USER': 'knit',
+    #     'PASSWORD':'site',
+    #     'HOST':'localhost',
+    #     'PORT': '3306',
+    #     'OPTIONS': {
+    #         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+    #     }
+    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'knit_users',
-        'USER': 'knit',
-        'PASSWORD':'site',
-        'HOST':'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        'NAME': 'my-app-db',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'mysqldb',
+        'PORT': ''
     }
 }
 

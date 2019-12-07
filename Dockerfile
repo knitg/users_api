@@ -14,7 +14,6 @@ COPY . ./
 
 RUN pip install --upgrade pip
 RUN pip install pipenv
-RUN pipenv lock --clear
-RUN pipenv install
-
-CMD [ "python", "manage.py runserver 0.0.0.0:8000" ]
+RUN pip install -r requirements.txt
+# RUN pipenv install
+ENTRYPOINT ["./entrypoint.sh"]

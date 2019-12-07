@@ -6,7 +6,7 @@ class KAddress(models.Model):
     address_line_1= models.CharField(default='', max_length=50)
     address_line_2= models.CharField(max_length=50, blank=True, null=True, default=None)
     landmark= models.CharField(max_length=50, blank=True, null=True, default=None)
-    postalCode= models.IntegerField(max_length=20, null=False)
+    postalCode= models.IntegerField(null=False)
     latitude= models.FloatField(max_length=20, blank=True, null=True, default=None)
     longitude= models.FloatField(max_length=20, blank=True, null=True, default=None)
     geoAddress= models.CharField(max_length=100, blank=True, null=True, default=None)
