@@ -15,17 +15,29 @@ services:
       MYSQL_ROOT_PASSWORD: 'root'
     networks:
       - main  # Add the container to the network "main"
-  web:
-    image: users_django
-    command: python manage.py runserver 0.0.0.0:8000
+  djangoapp:
+    image: mgurjala/k_users_api
     volumes:
       - .:/my_app_dir
     ports:
-      - "8001:8030"
+      - "8000:8030"
     depends_on:
       - mysqldb
     networks:
       - main  # Add the container to the network "main"
-
+  nginx:
+    image: nginx
+    ports:
+      - "80:8000"
+      - "443:443"
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:  # <-- wait for djangoapp to be "ready" before starting this service
+      - djangoapp    
+    links:
+      - djangoapp:djangoapp
+    networks:  # <-- here
+    - main 
+  
 networks:
   main:
