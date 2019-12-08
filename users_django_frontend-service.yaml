@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-api
+spec:
+  selector:
+    name: users-api
+  ports:
+  - port: 80
+    targetPort: 8030
+  type: LoadBalancer

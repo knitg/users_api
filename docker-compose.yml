@@ -8,6 +8,8 @@ services:
     ports:
       - "3306:3306"
     restart: always
+    volumes:
+      - my-datavolume:/var/lib/mysql
     environment:
       MYSQL_DATABASE: 'my-app-db'
       MYSQL_USER: 'root'
@@ -29,7 +31,6 @@ services:
     image: nginx
     ports:
       - "80:8000"
-      - "443:443"
     volumes:
       - ./config/nginx/conf.d:/etc/nginx/conf.d
     depends_on:  # <-- wait for djangoapp to be "ready" before starting this service
@@ -41,3 +42,6 @@ services:
   
 networks:
   main:
+
+volumes: 
+  my-datavolume:
