@@ -104,25 +104,25 @@ REST_AUTH_SERIALIZERS = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'knit_users',
-    #     'USER': 'knit',
-    #     'PASSWORD':'site',
-    #     'HOST':'localhost',
-    #     'PORT': '3306',
-    #     'OPTIONS': {
-    #         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-    #     }
-    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'my-app-db',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'mysqldb',
-        'PORT': ''
+        'NAME': 'knit_users',
+        'USER': 'kuser',
+        'PASSWORD':'password',
+        'HOST':'139.59.13.86',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'my-app-db',
+    #     'USER': 'root',
+    #     'PASSWORD': 'root',
+    #     'HOST': 'mysqldb',
+    #     'PORT': ''
+    # }
 }
 
 # Password validation
