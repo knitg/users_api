@@ -1,30 +1,30 @@
 version: '3'
 
 services:
-  mysqldb:
-    image: mysql:5.7
-    expose:
-      - "3306"
-    ports:
-      - "3306:3306"
-    restart: always
-    volumes:
-      - my-datavolume:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: 'my-app-db'
-      MYSQL_USER: 'root'
-      MYSQL_PASSWORD: 'root'
-      MYSQL_ROOT_PASSWORD: 'root'
-    networks:
-      - main  # Add the container to the network "main"
+  # mysqldb:
+  #   image: mysql:5.7
+  #   expose:
+  #     - "3306"
+  #   ports:
+  #     - "3306:3306"
+  #   restart: always
+  #   volumes:
+  #     - my-datavolume:/var/lib/mysql
+  #   environment:
+  #     MYSQL_DATABASE: 'my-app-db'
+  #     MYSQL_USER: 'root'
+  #     MYSQL_PASSWORD: 'root'
+  #     MYSQL_ROOT_PASSWORD: 'root'
+  #   networks:
+  #     - main  # Add the container to the network "main"
   djangoapp:
-    image: mgurjala/k_users_api
+    image: asia.gcr.io/project-knit/knit_users_api
     volumes:
       - .:/my_app_dir
     ports:
       - "8000:8030"
-    depends_on:
-      - mysqldb
+    # depends_on:
+    #   - mysqldb
     networks:
       - main  # Add the container to the network "main"
   nginx:

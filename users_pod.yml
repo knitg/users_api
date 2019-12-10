@@ -1,21 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: users-api
+  name: userapi
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: users-api
+      app: userapi
   template:
     metadata:
       labels:
-        app: users-api
+        app: userapi
     spec:
       containers:
-      - name: users-api
+      - name: userapi
         image: asia.gcr.io/project-knit/knit_users_api
-        imagePullPolicy: Always
         resources:
           limits:
             memory: "128Mi"
