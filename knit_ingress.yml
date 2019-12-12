@@ -1,18 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: knit-ingress
+  name: django-ingress
+  labels:
+    app: django
+  namespace: default
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: knit-app-ip
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-  - http:
-      paths:
-      - path: /
-        backend:
-          serviceName: userapi
-          servicePort: 8030
-      - path: /nginx
-        backend:
-          serviceName: nginx
-          servicePort: 80
+    - http:
+        paths:
+          - path: /django
+            backend:
+              serviceName: django-service
+              servicePort: 8000

@@ -7,13 +7,20 @@ RUN apt-get update && apt-get install -y \
 		sqlite3 \
 	--no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-ENV DJANGO_VERSION 2.2.7
+ENV PYTHONUNBUFFERED 1
+RUN mkdir /app
 
+COPY ./src /
 WORKDIR /
-COPY . ./
 
-RUN pip install --upgrade pip
-RUN pip install pipenv
+# RUN pip install --upgrade pip
+# RUN pip install pipenv
 RUN pip install -r requirements.txt
+
+RUN python manage.py makemigrations
+RUN python manage.py migrate
 # RUN pipenv install
-ENTRYPOINT ["./entrypoint.sh"]
+EXPOSE 8000
+#Run Server
+# ENTRYPOINT ["./entrypoint.sh"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

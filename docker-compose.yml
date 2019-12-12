@@ -18,30 +18,29 @@ services:
   #   networks:
   #     - main  # Add the container to the network "main"
   djangoapp:
-    image: asia.gcr.io/project-knit/knit_users_api
+    # image: asia.gcr.io/project-knit/knit_users_api
+    build: .
+    # command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/my_app_dir
+      - ./src:/app
     ports:
-      - "8000:8030"
+      - "8000:8000"
     # depends_on:
     #   - mysqldb
     networks:
       - main  # Add the container to the network "main"
-  nginx:
-    image: nginx
-    ports:
-      - "80:8000"
-    volumes:
-      - ./config/nginx/conf.d:/etc/nginx/conf.d
-    depends_on:  # <-- wait for djangoapp to be "ready" before starting this service
-      - djangoapp    
-    links:
-      - djangoapp:djangoapp
-    networks:  # <-- here
-    - main 
+  # nginx:
+  #   image: nginx
+  #   ports:
+  #     - "80:8000"
+  #   volumes:
+  #     - ./config/nginx/conf.d:/etc/nginx/conf.d
+  #   depends_on:  # <-- wait for djangoapp to be "ready" before starting this service
+  #     - djangoapp    
+  #   links:
+  #     - djangoapp:djangoapp
+  #   networks:  # <-- here
+  #   - main 
   
 networks:
-  main:
-
-volumes: 
-  my-datavolume:
+  main: 

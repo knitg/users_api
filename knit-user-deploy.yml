@@ -14,10 +14,10 @@ spec:
     spec:
       containers:
       - name: userapi
-        image: asia.gcr.io/project-knit/knit_users_api
+        image: asia.gcr.io/project-knit/knit_users_api:latest
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 8030
+        - containerPort: 8000
